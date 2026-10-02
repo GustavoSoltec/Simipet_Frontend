@@ -1,0 +1,39 @@
+.sp-detalle-dia-sucursal {
+  padding: var(--sp-space-3) var(--sp-space-4) var(--sp-space-4) 48px;
+}
+
+.sp-detalle-dia-sucursal__tabla {
+  width: 100%;
+  max-width: 640px;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  background: #fff;
+  border: 1px solid var(--sp-border-soft);
+  border-radius: var(--sp-radius-sm);
+  overflow: hidden;
+}
+
+.sp-detalle-dia-sucursal__tabla th {
+  text-align: right;
+  padding: 7px 12px;
+  background: var(--sp-surface-1);
+  color: var(--sp-text-500);
+  font-weight: 700;
+  font-size: 11px;
+  border-bottom: 1px solid var(--sp-border-soft);
+}
+
+.sp-detalle-dia-sucursal__tabla td {
+  text-align: right;
+  padding: 7px 12px;
+  color: var(--sp-text-900);
+  border-bottom: 1px solid var(--sp-border-soft);
+}
+
+.sp-detalle-dia-sucursal__tabla tr:last-child td {
+  border-bottom: none;
+}
+
+.sp-detalle-dia-sucursal__celda--left {
+  text-align: left !important;
+}

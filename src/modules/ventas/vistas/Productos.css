@@ -1,0 +1,36 @@
+/* El titulo ahora vive en el componente Panel compartido (ver components/common/Panel.css). */
+
+.sp-productos__filtros {
+  display: flex;
+  gap: var(--sp-space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-space-4);
+}
+
+.sp-productos__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--sp-text-500);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.sp-productos__campo select {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--sp-text-900);
+  text-transform: none;
+  padding: 7px 10px;
+  border: 1px solid var(--sp-border);
+  border-radius: 6px;
+  background: #fff;
+  min-width: 200px;
+}
+
+.sp-productos__campo select:focus-visible {
+  outline: 2px solid var(--sp-blue-600);
+  outline-offset: 1px;
+}

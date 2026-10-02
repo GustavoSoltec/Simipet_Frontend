@@ -1,0 +1,69 @@
+.sp-resumen-mensual__fila {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+}
+
+.sp-resumen-mensual__cuadro {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  cursor: pointer;
+  background: var(--sp-surface-2);
+  border: 1px solid var(--sp-border-soft);
+  border-radius: var(--sp-radius-md);
+  padding: 12px;
+}
+
+.sp-resumen-mensual__cuadro:hover {
+  border-color: var(--sp-blue-600);
+}
+
+.sp-resumen-mensual__cuadro--activo {
+  background: var(--sp-blue-100);
+  border-color: var(--sp-blue-600);
+}
+
+.sp-resumen-mensual__mes {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--sp-text-700);
+  margin-bottom: 2px;
+}
+
+.sp-resumen-mensual__cuadro--activo .sp-resumen-mensual__mes {
+  color: var(--sp-blue-700);
+}
+
+.sp-resumen-mensual__indicador {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sp-resumen-mensual__label {
+  font-size: 10px;
+  color: var(--sp-text-400);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.sp-resumen-mensual__valor {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--sp-text-900);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 900px) {
+  .sp-resumen-mensual__fila {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .sp-resumen-mensual__fila {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

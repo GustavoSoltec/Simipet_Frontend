@@ -1,0 +1,37 @@
+.sp-empty {
+  padding: 46px 20px;
+  text-align: center;
+}
+
+.sp-empty__title {
+  margin: 0 0 var(--sp-space-1);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--sp-text-500);
+}
+
+.sp-empty--error .sp-empty__title {
+  color: var(--sp-red-700);
+}
+
+.sp-empty__message {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--sp-text-400);
+}
+
+.sp-empty__action {
+  margin-top: var(--sp-space-3);
+  border: 1px solid var(--sp-blue-600);
+  background: #fff;
+  color: var(--sp-blue-600);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: var(--sp-radius-sm);
+  cursor: pointer;
+}
+
+.sp-empty__action:hover {
+  background: var(--sp-blue-100);
+}

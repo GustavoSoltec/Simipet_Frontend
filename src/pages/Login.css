@@ -1,0 +1,150 @@
+.sp-login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-space-4);
+
+  /* Misma foto de fondo que Soltec 2.0, con el mismo overlay ligero
+     para que la tarjeta resalte sin oscurecer la foto por completo. */
+  background-image: linear-gradient(180deg, rgba(10, 16, 28, 0.18), rgba(10, 16, 28, 0.28)),
+    url('/login-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.sp-login__card {
+  width: 100%;
+  max-width: 380px;
+  background: #fff;
+  border: 1px solid var(--sp-border-soft);
+  border-top: 3px solid var(--sp-blue-600);
+  border-radius: var(--sp-radius-lg);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.3);
+  padding: var(--sp-space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-space-4);
+}
+
+.sp-login__brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding-bottom: var(--sp-space-3);
+  border-bottom: 1px solid var(--sp-border-soft);
+}
+
+.sp-login__brand-mark {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.sp-login__brand-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--sp-text-900);
+}
+
+.sp-login__subtitle {
+  margin: 0;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sp-text-700);
+}
+
+/* El componente Notice compartido trae su propio margen pensado para
+   vivir dentro de un panel ancho con padding propio; aqui ya esta
+   dentro de una tarjeta angosta con su propio "gap" entre elementos,
+   asi que se anula para que no quede mas angosto que los campos. */
+.sp-login__card .sp-notice {
+  margin: 0;
+}
+
+.sp-login__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sp-login__field-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.sp-login__field-wrap input {
+  width: 100%;
+  background: var(--sp-surface-2);
+  border: 1px solid var(--sp-border-soft);
+  border-radius: var(--sp-radius-sm);
+  padding: 11px 40px 11px 14px;
+  font-size: 14px;
+  color: var(--sp-text-900);
+}
+
+.sp-login__field-wrap input::placeholder {
+  color: var(--sp-text-400);
+}
+
+.sp-login__field-wrap input:focus-visible {
+  outline: 2px solid var(--sp-blue-600);
+  outline-offset: 1px;
+}
+
+.sp-login__field-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sp-text-400);
+  pointer-events: none;
+}
+
+.sp-login__field-icon--btn {
+  pointer-events: auto;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px;
+}
+
+.sp-login__field-icon--btn:hover {
+  color: var(--sp-text-600);
+}
+
+.sp-login__error {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--sp-red-700);
+  background: var(--sp-red-100);
+  padding: 8px 10px;
+  border-radius: var(--sp-radius-sm);
+}
+
+.sp-login__submit {
+  border: none;
+  background: var(--sp-blue-600);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 11px;
+  border-radius: var(--sp-radius-sm);
+  cursor: pointer;
+}
+
+.sp-login__submit:hover {
+  background: var(--sp-blue-700);
+}
+
+.sp-login__submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

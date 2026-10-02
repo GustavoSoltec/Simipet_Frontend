@@ -1,0 +1,65 @@
+.sp-widget-lista-meses {
+  height: 100%;
+}
+
+.sp-widget-lista-meses__lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sp-widget-lista-meses__item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 8px 10px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.sp-widget-lista-meses__item:hover {
+  background: var(--sp-surface-2);
+}
+
+.sp-widget-lista-meses__item--activo {
+  background: var(--sp-blue-100);
+  border-color: var(--sp-blue-600);
+}
+
+.sp-widget-lista-meses__etiqueta {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--sp-text-700);
+}
+
+.sp-widget-lista-meses__item--activo .sp-widget-lista-meses__etiqueta {
+  color: var(--sp-blue-700);
+}
+
+.sp-widget-lista-meses__valores {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.sp-widget-lista-meses__valor {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--sp-text-900);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.sp-widget-lista-meses__valor-sub {
+  font-size: 11px;
+  color: var(--sp-text-400);
+  white-space: nowrap;
+}

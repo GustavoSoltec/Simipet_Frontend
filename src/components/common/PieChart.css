@@ -1,0 +1,93 @@
+.sp-piechart {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-space-5);
+}
+
+.sp-piechart--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  color: var(--sp-text-400);
+  font-size: 13px;
+}
+
+.sp-piechart__svg {
+  width: 180px;
+  height: 180px;
+  flex: none;
+}
+
+.sp-piechart__segmento {
+  stroke: #fff;
+  stroke-width: 1.5;
+  transition: opacity 0.15s ease;
+}
+
+.sp-piechart__segmento:hover {
+  opacity: 0.85;
+}
+
+.sp-piechart__hueco {
+  fill: #fff;
+}
+
+.sp-piechart__leyenda {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.sp-piechart__leyenda-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--sp-text-700);
+}
+
+.sp-piechart__leyenda-color {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex: none;
+}
+
+.sp-piechart__leyenda-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sp-piechart__leyenda-monto {
+  flex: none;
+  font-size: 11.5px;
+  color: var(--sp-text-500);
+  font-variant-numeric: tabular-nums;
+}
+
+.sp-piechart__leyenda-valor {
+  flex: none;
+  font-weight: 700;
+  color: var(--sp-text-900);
+}
+
+@media (max-width: 640px) {
+  .sp-piechart {
+    flex-direction: column;
+  }
+  .sp-piechart__leyenda {
+    width: 100%;
+    max-height: none;
+  }
+}

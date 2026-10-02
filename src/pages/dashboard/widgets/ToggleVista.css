@@ -1,0 +1,25 @@
+.sp-toggle-vista {
+  display: inline-flex;
+  border: 1px solid var(--sp-border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.sp-toggle-vista__btn {
+  cursor: pointer;
+  background: #fff;
+  border: none;
+  padding: 5px 11px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--sp-text-500);
+}
+
+.sp-toggle-vista__btn + .sp-toggle-vista__btn {
+  border-left: 1px solid var(--sp-border);
+}
+
+.sp-toggle-vista__btn--activo {
+  background: var(--sp-blue-600);
+  color: #fff;
+}

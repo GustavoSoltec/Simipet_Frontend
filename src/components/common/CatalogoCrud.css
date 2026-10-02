@@ -1,0 +1,161 @@
+.sp-catalogo-crud__toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--sp-space-3);
+}
+
+.sp-catalogo-crud__btn-nuevo {
+  cursor: pointer;
+  background: var(--sp-blue-600);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sp-catalogo-crud__btn-nuevo:hover {
+  background: var(--sp-blue-700);
+}
+
+.sp-catalogo-crud__acciones {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.sp-catalogo-crud__accion-btn {
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid var(--sp-border);
+  border-radius: 5px;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sp-text-500);
+}
+
+.sp-catalogo-crud__accion-btn:hover {
+  border-color: var(--sp-blue-600);
+  color: var(--sp-blue-600);
+}
+
+.sp-catalogo-crud__accion-btn--eliminar:hover {
+  border-color: var(--sp-red-600);
+  color: var(--sp-red-600);
+}
+
+.sp-catalogo-crud__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 19, 28, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: var(--sp-space-4);
+}
+
+.sp-catalogo-crud__modal {
+  background: #fff;
+  border-radius: var(--sp-radius-lg);
+  box-shadow: var(--sp-shadow-pop);
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: var(--sp-space-5);
+}
+
+.sp-catalogo-crud__modal-titulo {
+  margin: 0 0 var(--sp-space-4);
+  font-size: 16px;
+  color: var(--sp-text-900);
+}
+
+.sp-catalogo-crud__error-form {
+  background: var(--sp-red-100);
+  color: var(--sp-red-700);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  margin-bottom: var(--sp-space-3);
+}
+
+.sp-catalogo-crud__campos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-space-3);
+  margin-bottom: var(--sp-space-5);
+}
+
+.sp-catalogo-crud__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--sp-text-500);
+}
+
+.sp-catalogo-crud__campo input,
+.sp-catalogo-crud__campo select {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--sp-text-900);
+  padding: 8px 10px;
+  border: 1px solid var(--sp-border);
+  border-radius: 6px;
+  background: #fff;
+}
+
+.sp-catalogo-crud__campo input:focus-visible,
+.sp-catalogo-crud__campo select:focus-visible {
+  outline: 2px solid var(--sp-blue-600);
+  outline-offset: 1px;
+}
+
+.sp-catalogo-crud__campo input:disabled {
+  background: var(--sp-surface-2);
+  color: var(--sp-text-400);
+}
+
+.sp-catalogo-crud__modal-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-space-2);
+}
+
+.sp-catalogo-crud__btn-cancelar {
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid var(--sp-border);
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sp-text-700);
+}
+
+.sp-catalogo-crud__btn-guardar {
+  cursor: pointer;
+  background: var(--sp-blue-600);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sp-catalogo-crud__btn-guardar:hover {
+  background: var(--sp-blue-700);
+}
+
+.sp-catalogo-crud__btn-guardar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

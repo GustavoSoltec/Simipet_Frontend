@@ -1,0 +1,207 @@
+.sp-dash {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-space-4);
+}
+
+/* Barra de "Personalizar" */
+.sp-dash__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--sp-space-3);
+}
+
+.sp-dash__personalizar-btn {
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid var(--sp-border);
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--sp-text-900);
+}
+
+.sp-dash__personalizar-btn:hover {
+  border-color: var(--sp-blue-600);
+  color: var(--sp-blue-600);
+}
+
+.sp-dash__personalizar-btn--activo {
+  background: var(--sp-blue-600);
+  border-color: var(--sp-blue-600);
+  color: #fff;
+}
+
+.sp-dash__restaurar-btn {
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--sp-text-500);
+  text-decoration: underline;
+}
+
+.sp-dash__restaurar-btn:hover {
+  color: var(--sp-text-900);
+}
+
+.sp-dash__agregar {
+  position: relative;
+}
+
+.sp-dash__agregar-btn {
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid var(--sp-blue-600);
+  color: var(--sp-blue-600);
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sp-dash__agregar-btn:hover {
+  background: var(--sp-blue-100);
+}
+
+.sp-dash__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+
+.sp-dash__agregar-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 50;
+  background: #fff;
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius-md);
+  box-shadow: var(--sp-shadow-pop);
+  min-width: 240px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sp-dash__agregar-menu button {
+  text-align: left;
+  cursor: pointer;
+  background: none;
+  border: none;
+  border-radius: 5px;
+  padding: 9px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sp-text-900);
+}
+
+.sp-dash__agregar-menu button:hover {
+  background: var(--sp-surface-2);
+}
+
+.sp-dash__editando-hint {
+  margin: -6px 0 0;
+  font-size: 12.5px;
+  color: var(--sp-text-500);
+}
+
+.sp-dash__vacio {
+  background: #fff;
+  border: 1px dashed var(--sp-border);
+  border-radius: var(--sp-radius-md);
+  padding: 40px 20px;
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--sp-text-500);
+}
+
+/* Grid de widgets: flex-wrap para que cada widget se acomode segun su
+   "tamano" (chico/mitad/completo), sin importar el orden en que vengan
+   -- el orden mismo lo controla useDashboardLayout. */
+/* Grid de widgets: 2 columnas fijas. Antes esto era Flexbox con
+   flex-grow, y un widget "mitad" que quedaba SOLO en su fila (sin otro
+   mitad justo al lado, por ejemplo el ultimo en la lista) se estiraba
+   a ancho completo -- con Grid de columnas fijas y "span", un mitad
+   siempre ocupa exactamente 1 de las 2 columnas, deje o no espacio
+   vacio al lado, y nunca se ve mas grande de lo que deberia. */
+.sp-dash__widgets {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  align-items: stretch;
+}
+
+.sp-dash__widget--chico {
+  grid-column: span 1;
+}
+
+.sp-dash__widget--mitad {
+  grid-column: span 1;
+}
+
+.sp-dash__widget--completo {
+  grid-column: span 2;
+}
+
+.sp-dash__widget--editando {
+  position: relative;
+  outline: 2px dashed var(--sp-border);
+  outline-offset: 3px;
+  border-radius: 8px;
+  cursor: grab;
+}
+
+.sp-dash__widget--editando:active {
+  cursor: grabbing;
+}
+
+.sp-dash__widget--arrastrando {
+  opacity: 0.4;
+}
+
+.sp-dash__widget-chrome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--sp-text-900);
+  border-radius: 6px 6px 0 0;
+  padding: 4px 8px;
+}
+
+.sp-dash__drag-handle {
+  color: #fff;
+  font-size: 14px;
+  letter-spacing: 2px;
+  cursor: grab;
+}
+
+.sp-dash__ocultar-btn {
+  cursor: pointer;
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.sp-dash__ocultar-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+@media (max-width: 720px) {
+  .sp-dash__widgets {
+    grid-template-columns: 1fr;
+  }
+  .sp-dash__widget--mitad,
+  .sp-dash__widget--chico,
+  .sp-dash__widget--completo {
+    grid-column: span 1;
+  }
+}

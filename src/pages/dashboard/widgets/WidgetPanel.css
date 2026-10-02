@@ -1,0 +1,73 @@
+.sp-widget-panel {
+  height: 100%;
+}
+
+.sp-widget-panel__titulo {
+  margin: 0 0 var(--sp-space-3);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--sp-text-700);
+}
+
+.sp-widget-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-space-2);
+  margin-bottom: var(--sp-space-3);
+  flex-wrap: wrap;
+}
+
+.sp-widget-panel__header .sp-widget-panel__titulo {
+  margin-bottom: 0;
+}
+
+.sp-widget-panel__controles {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sp-widget-participacion__caja {
+  background: #fff;
+  border: 1px solid var(--sp-border-soft);
+  border-radius: var(--sp-radius-lg);
+  padding: var(--sp-space-4);
+  box-shadow: var(--sp-shadow-card);
+}
+
+.sp-widget-participacion__total {
+  font-size: 13px;
+  color: var(--sp-text-600);
+  margin-bottom: var(--sp-space-3);
+}
+
+.sp-widget-participacion__total strong {
+  color: var(--sp-text-900);
+  font-size: 15px;
+}
+
+.sp-tendencia-grafica {
+  margin-top: 4px;
+}
+
+.sp-tendencia-tooltip {
+  background: #fff;
+  border: 1px solid var(--sp-border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.sp-tendencia-tooltip__fecha {
+  margin: 0 0 2px;
+  font-size: 11px;
+  color: var(--sp-text-500);
+}
+
+.sp-tendencia-tooltip__valor {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--sp-text-900);
+}

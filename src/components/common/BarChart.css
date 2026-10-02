@@ -1,0 +1,58 @@
+.sp-barchart {
+  width: 100%;
+  background: #fff;
+  border: 1px solid var(--sp-border-soft);
+  border-radius: var(--sp-radius-lg);
+  padding: var(--sp-space-4);
+  box-shadow: var(--sp-shadow-card);
+}
+
+.sp-barchart--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--sp-text-400);
+  font-size: 13px;
+}
+
+.sp-barchart__svg {
+  width: 100%;
+  height: 260px;
+  display: block;
+  overflow: visible;
+}
+
+.sp-barchart__grid {
+  stroke: var(--sp-border-soft);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+
+.sp-barchart__eje-label {
+  font-size: 9.5px;
+  fill: var(--sp-text-400);
+  text-anchor: end;
+}
+
+.sp-barchart__barra {
+  fill: url(#sp-barchart-gradiente);
+  transition: opacity 0.15s ease;
+}
+
+.sp-barchart__barra:hover {
+  opacity: 0.85;
+}
+
+.sp-barchart__label {
+  font-size: 9.5px;
+  fill: var(--sp-text-400);
+  text-anchor: end;
+}
+
+.sp-barchart__nota {
+  margin: var(--sp-space-2) 0 0;
+  font-size: 11.5px;
+  color: var(--sp-text-400);
+  text-align: center;
+}

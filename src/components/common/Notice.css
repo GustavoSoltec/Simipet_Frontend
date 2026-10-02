@@ -1,0 +1,9 @@
+.sp-notice {
+  margin: var(--sp-space-3) 0;
+  background: var(--sp-orange-100);
+  color: var(--sp-orange-700);
+  border: 1px solid #EFDCB1;
+  border-radius: var(--sp-radius-sm);
+  padding: 9px 13px;
+  font-size: 12.5px;
+}

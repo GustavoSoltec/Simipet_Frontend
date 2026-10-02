@@ -1,0 +1,172 @@
+.sp-tabla-reporte {
+  margin-top: var(--sp-space-4);
+  background: #fff;
+  border: 1px solid var(--sp-border-soft);
+  border-radius: var(--sp-radius-lg);
+  /* Sin overflow:hidden aqui a proposito: el menu de "Columnas" es
+     position:absolute y necesita poder salirse del contenedor sin
+     recortarse cuando la tabla es chica. El recorte de esquinas se
+     resuelve por separado en el toolbar y en .sp-tabla-reporte__scroll. */
+}
+
+.sp-tabla-reporte__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--sp-space-2);
+  padding: var(--sp-space-3) var(--sp-space-4);
+  border-bottom: 1px solid var(--sp-border-soft);
+  background: var(--sp-surface-1);
+  border-top-left-radius: var(--sp-radius-lg);
+  border-top-right-radius: var(--sp-radius-lg);
+}
+
+.sp-tabla-reporte__columnas {
+  position: relative;
+}
+
+.sp-tabla-reporte__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid var(--sp-border);
+  border-radius: 6px;
+  padding: 7px 13px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sp-text-900);
+  white-space: nowrap;
+}
+
+.sp-tabla-reporte__btn:hover {
+  border-color: var(--sp-blue-600);
+  color: var(--sp-blue-600);
+}
+
+.sp-tabla-reporte__columnas-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 50;
+  background: #fff;
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius-md);
+  box-shadow: var(--sp-shadow-pop);
+  padding: 6px;
+  min-width: 200px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.sp-tabla-reporte__columna-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  font-size: 13px;
+  color: var(--sp-text-700);
+  border-radius: 5px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.sp-tabla-reporte__columna-item:hover {
+  background: var(--sp-surface-2);
+}
+
+.sp-tabla-reporte__scroll {
+  overflow: auto;
+  border-bottom-left-radius: var(--sp-radius-lg);
+  border-bottom-right-radius: var(--sp-radius-lg);
+}
+
+.sp-tabla-reporte__tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.sp-tabla-reporte__tabla thead th {
+  position: sticky;
+  top: 0;
+  text-align: right;
+  padding: 10px 14px;
+  background: var(--sp-surface-2);
+  color: var(--sp-text-600);
+  font-weight: 700;
+  font-size: 12px;
+  border-bottom: 1px solid var(--sp-border-soft);
+  z-index: 1;
+}
+
+.sp-tabla-reporte__tabla td {
+  text-align: right;
+  padding: 9px 14px;
+  color: var(--sp-text-900);
+  border-bottom: 1px solid var(--sp-border-soft);
+}
+
+.sp-tabla-reporte__celda--left {
+  text-align: left !important;
+}
+
+.sp-tabla-reporte__th {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sp-tabla-reporte__th:hover {
+  color: var(--sp-blue-600);
+}
+
+.sp-tabla-reporte__orden-icono {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 9px;
+  color: var(--sp-text-300);
+}
+
+.sp-tabla-reporte__orden-icono--activo {
+  color: var(--sp-blue-600);
+}
+
+.sp-tabla-reporte__celda-expandir-header {
+  width: 32px;
+}
+
+.sp-tabla-reporte__celda-expandir {
+  width: 32px;
+  text-align: center !important;
+}
+
+.sp-tabla-reporte__chevron-fila {
+  display: inline-block;
+  font-size: 11px;
+  color: var(--sp-text-400);
+  transition: transform 0.15s ease;
+}
+
+.sp-tabla-reporte__chevron-fila--open {
+  transform: rotate(90deg);
+  color: var(--sp-blue-600);
+}
+
+.sp-tabla-reporte__fila--clickeable {
+  cursor: pointer;
+}
+
+.sp-tabla-reporte__tabla tbody tr:hover td {
+  background: var(--sp-surface-2);
+}
+
+.sp-tabla-reporte__fila-expandida td {
+  padding: 0;
+  background: var(--sp-surface-2);
+}
+
+.sp-tabla-reporte__fila-expandida:hover td {
+  background: var(--sp-surface-2);
+}

@@ -1,0 +1,14 @@
+.sp-selector-cantidad {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--sp-text-700);
+  border: 1px solid var(--sp-border);
+  border-radius: 6px;
+  padding: 5px 8px;
+  background: #fff;
+}
+
+.sp-selector-cantidad:focus-visible {
+  outline: 2px solid var(--sp-blue-600);
+  outline-offset: 1px;
+}

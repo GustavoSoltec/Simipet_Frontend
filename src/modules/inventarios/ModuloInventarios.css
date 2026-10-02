@@ -1,0 +1,8 @@
+/* El acento de color ya no va aqui a nivel de modulo -- va por vista,
+   en el Panel compartido de cada vista (ver ModuloVentas.css para el
+   detalle completo del criterio). */
+.sp-modulo-inventarios {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}

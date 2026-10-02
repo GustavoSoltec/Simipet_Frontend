@@ -1,0 +1,131 @@
+/*
+  Tokens de diseno de Simipet.
+  Paleta y sistema de color IDENTICOS a los de Soltec 2.0 (mismo sidebar
+  azul marino oscuro #39414C con acento naranja #E8920C, misma escala de
+  acentos semanticos), para que ambas plataformas compartan una sola
+  identidad visual reconocible.
+*/
+
+:root {
+  /* Marca / navegacion (sidebar). Por defecto oscuro, igual que
+     Soltec 2.0; el tema claro se pisa en Sidebar.css
+     (.sp-sidebar--light-mode), activado desde el boton del Header. */
+  --sp-sidebar-bg: #39414C;
+  --sp-sidebar-border: rgba(255, 255, 255, 0.13);
+  --sp-sidebar-text: #CBD1D8;
+  --sp-sidebar-caption: #9099A3;
+  --sp-sidebar-hover-bg: #2E353F;
+  --sp-sidebar-active-bg: #272D34;
+  --sp-sidebar-active-text: #FFFFFF;
+  --sp-sidebar-accent: #E8920C;
+  --sp-sidebar-inactive-text: #A7AEB6;
+  --sp-sidebar-submenu-bg: #31373F;
+  --sp-sidebar-submenu-hover-bg: #2A3038;
+  --sp-sidebar-bullet: #6C757F;
+  --sp-sidebar-avatar-text: #232830;
+
+  /* Fondo oscuro base (usado en pantalla de login) */
+  --sp-navy-900: #1B2233;
+  --sp-navy-800: #232C3E;
+  --sp-navy-700: #2C3648;
+
+  /* Acento primario */
+  --sp-blue-700: #1F5F94;
+  --sp-blue-600: #2B7DC4;
+  --sp-blue-500: #3D86C6;
+  --sp-blue-100: #EAF2FB;
+
+  /* Acentos semanticos */
+  --sp-orange-700: #C0851B;
+  --sp-orange-600: #E8920C;
+  --sp-orange-100: #FBF0DC;
+
+  --sp-green-700: #1D7044;
+  --sp-green-600: #2E8B43;
+  --sp-green-100: #E4F3EA;
+
+  --sp-teal-700: #1B7E90;
+  --sp-teal-600: #2199B0;
+  --sp-teal-100: #E1F2F5;
+
+  --sp-red-700: #A63327;
+  --sp-red-600: #C7402F;
+  --sp-red-100: #FBE7E4;
+
+  /* Neutros / superficie */
+  --sp-surface-0: #FFFFFF;
+  --sp-surface-1: #FBFCFD;
+  --sp-surface-2: #F4F6F8;
+  --sp-border: #D5DAE0;
+  --sp-border-soft: #E6E9ED;
+
+  /* Texto */
+  --sp-text-900: #2B3138;
+  --sp-text-700: #454C55;
+  --sp-text-600: #5A636D;
+  --sp-text-500: #6B7480;
+  --sp-text-400: #7A828C;
+  --sp-text-300: #9AA1AA;
+
+  /* Tipografia */
+  --sp-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --sp-font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  /* Escala de espaciado */
+  --sp-space-1: 4px;
+  --sp-space-2: 8px;
+  --sp-space-3: 12px;
+  --sp-space-4: 16px;
+  --sp-space-5: 20px;
+  --sp-space-6: 24px;
+
+  /* Radios y sombras */
+  --sp-radius-sm: 5px;
+  --sp-radius-md: 8px;
+  --sp-radius-lg: 12px;
+  --sp-shadow-card: 0 4px 18px rgba(40, 48, 57, 0.07);
+  --sp-shadow-pop: 0 10px 28px rgba(40, 48, 57, 0.18);
+
+  /* Layout */
+  --sp-sidebar-width: 240px;
+  --sp-sidebar-width-collapsed: 64px;
+  --sp-header-height: 56px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--sp-font-sans);
+  color: var(--sp-text-900);
+  background: var(--sp-surface-1);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+}
+
+/* Animacion de giro compartida por cualquier spinner de la app. Respeta
+   prefers-reduced-motion via la regla de mas abajo. */
+@keyframes sp-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Respeta preferencia de movimiento reducido en toda la aplicacion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

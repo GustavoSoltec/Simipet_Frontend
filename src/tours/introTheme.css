@@ -1,0 +1,58 @@
+/* Retoques minimos sobre el tema por default de intro.js para que
+   combine con la paleta de Simipet, sin reescribir todo el plugin. */
+
+.introjs-tooltip {
+  font-family: var(--sp-font-sans);
+  border-radius: var(--sp-radius-md);
+  box-shadow: var(--sp-shadow-pop);
+  max-width: 340px;
+}
+
+.introjs-tooltiptext {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--sp-text-900);
+}
+
+.introjs-button {
+  font-family: var(--sp-font-sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  border-radius: var(--sp-radius-sm);
+  text-shadow: none;
+  padding: 7px 13px;
+}
+
+.introjs-nextbutton,
+.introjs-donebutton {
+  background: var(--sp-blue-600) !important;
+  border-color: var(--sp-blue-600) !important;
+  color: #fff !important;
+}
+
+.introjs-nextbutton:hover,
+.introjs-donebutton:hover {
+  background: var(--sp-blue-700) !important;
+  border-color: var(--sp-blue-700) !important;
+}
+
+.introjs-prevbutton {
+  color: var(--sp-text-600) !important;
+  border-color: var(--sp-border) !important;
+}
+
+.introjs-bullets ul li a.active {
+  background: var(--sp-blue-600);
+}
+
+.introjs-progress {
+  background: var(--sp-surface-2);
+}
+
+.introjs-progressbar {
+  background: var(--sp-blue-600);
+}
+
+.introjs-skipbutton {
+  color: var(--sp-text-400);
+}

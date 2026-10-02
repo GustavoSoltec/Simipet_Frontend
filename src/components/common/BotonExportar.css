@@ -1,0 +1,75 @@
+.sp-boton-exportar {
+  position: relative;
+}
+
+.sp-boton-exportar__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid var(--sp-border);
+  border-radius: 6px;
+  padding: 7px 13px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sp-text-900);
+  white-space: nowrap;
+}
+
+.sp-boton-exportar__btn:hover {
+  border-color: var(--sp-blue-600);
+  color: var(--sp-blue-600);
+}
+
+.sp-boton-exportar__chevron {
+  font-size: 10px;
+  color: var(--sp-text-300);
+  transition: transform 0.15s ease;
+  display: inline-block;
+}
+
+.sp-boton-exportar__chevron--open {
+  transform: rotate(180deg);
+}
+
+.sp-boton-exportar__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+
+.sp-boton-exportar__menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 50;
+  background: #fff;
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius-md);
+  box-shadow: var(--sp-shadow-pop);
+  overflow: hidden;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+}
+
+.sp-boton-exportar__menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sp-text-900);
+  text-align: left;
+}
+
+.sp-boton-exportar__menu button:hover {
+  background: var(--sp-surface-2);
+}

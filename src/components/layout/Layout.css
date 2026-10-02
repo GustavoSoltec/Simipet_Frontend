@@ -1,0 +1,23 @@
+.sp-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--sp-surface-1);
+}
+
+.sp-layout__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sp-layout__content {
+  flex: 1;
+  padding: var(--sp-space-5);
+}
+
+@media (max-width: 720px) {
+  .sp-layout__content {
+    padding: var(--sp-space-3);
+  }
+}

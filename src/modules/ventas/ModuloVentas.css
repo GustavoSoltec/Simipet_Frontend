@@ -1,0 +1,10 @@
+/* El acento de color ya no va aqui a nivel de modulo -- va por vista,
+   en el borde superior del componente Panel compartido (ver
+   components/common/Panel.css), igual criterio que Soltec 2.0
+   (confirmado contra su captura real: el color cambia por reporte, no
+   por modulo completo). */
+.sp-modulo-ventas {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
