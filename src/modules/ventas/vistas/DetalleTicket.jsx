@@ -26,8 +26,9 @@ function hoyComoFechaSimple() {
 function formatearFecha(valor) {
   if (!valor) return '';
   const fecha = new Date(valor);
-  if (Number.isNaN(fecha.getTime())) return String(valor);
-  return fecha.toLocaleDateString('es-MX');
+  // if (Number.isNaN(fecha.getTime())) return String(valor);
+  // return fecha.toLocaleDateString('es-MX');
+  return fecha.toISOString().slice(0, 10);
 }
 
 const COLUMNAS = [
