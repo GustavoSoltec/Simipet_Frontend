@@ -12,6 +12,7 @@ import './DetalleTicket.css';
 
 const formatoMoneda = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 2 });
 const formatoEntero = new Intl.NumberFormat('es-MX', { maximumFractionDigits: 0 });
+const formatoPorcentaje = (v) => `${Number(v || 0).toLocaleString('es-MX', {maximumFractionDigits: 2})}%`;
 
 function primerDiaDelMes() {
   const hoy = new Date();
@@ -33,22 +34,32 @@ function formatearFecha(valor) {
 
 const COLUMNAS = [
   { key: 'Fecha', label: 'Fecha', align: 'left', format: (v) => formatearFecha(v) },
+  { key: 'Hora', label: 'Hora', align: 'left' },
   { key: 'ClaveSimi', label: 'Sucursal', align: 'left', format: (v) => claveYNombreSucursal(v) || v },
   { key: 'Folio', label: 'Folio', align: 'left' },
+  { key: 'NoEmpleado', label: '# Empleado', align: 'left' },
   { key: 'Vendedor', label: 'Vendedor', align: 'left' },
+  { key: 'Concepto', label: 'Concepto', align: 'left', visibleByDefault: false },
+  { key: 'Referencia', label: 'Referencia', align: 'left', visibleByDefault: false },
+  { key: 'SubtotalVenta', label: 'Subtotal venta', format: (v) => formatoMoneda.format(v || 0) },
+  { key: 'CodigoProducto', label: 'Código', align: 'left' },
   { key: 'Producto', label: 'Producto', align: 'left' },
   { key: 'GrupoProducto', label: 'Grupo', align: 'left', visibleByDefault: false },
   { key: 'SubgrupoProducto', label: 'Subgrupo', align: 'left', visibleByDefault: false },
   { key: 'CategoriaProducto', label: 'Categoría', align: 'left', visibleByDefault: false },
   { key: 'Cantidad', label: 'Cant.', format: (v) => formatoEntero.format(v || 0) },
   { key: 'PrecioUnitario', label: 'P. unitario', format: (v) => formatoMoneda.format(v || 0) },
+  { key: 'SubtotalProducto', label: 'Subtotal producto', format: (v) => formatoMoneda.format(v || 0) },
+  { key: 'PorcentajeDescuento', label: '% Desc.', format: formatoPorcentaje },
   { key: 'ImporteDescuento', label: 'Descuento', format: (v) => formatoMoneda.format(v || 0) },
+  { key: 'PorcentajeIva', label: '% IVA', format: formatoPorcentaje },
   { key: 'ImporteIva', label: 'IVA', format: (v) => formatoMoneda.format(v || 0), visibleByDefault: false },
   { key: 'ImporteTotal', label: 'Total', format: (v) => formatoMoneda.format(v || 0) },
   { key: 'FormaPago', label: 'Forma pago', align: 'left' },
-  { key: 'Cancelada', label: 'Estatus', align: 'left', format: (v) => (v ? 'Cancelada' : 'Vigente') },
+  { key: 'Cancelada', label: 'Cancelada', align: 'left', format: (v) => (v ? 'Sí' : 'No') },
   { key: 'TipoOperacion', label: 'Tipo operación (código)', visibleByDefault: false }
 ];
+
 
 function DetalleTicket() {
   // Este reporte usa YYYY-MM-DD directo (DATE), no FechaKey -- por eso
@@ -90,6 +101,9 @@ function DetalleTicket() {
         String(f.Folio ?? '').includes(texto) ||
         f.Producto?.toLowerCase().includes(texto) ||
         f.Vendedor?.toLowerCase().includes(texto) ||
+        f.CodigoProducto?.toLowerCase().includes(texto) ||
+        String(f.NoEmpleado ?? '').includes(texto) ||
+        String(f.Referencia ?? '').toLowerCase().includes(texto) ||
         f.ClaveSimi?.toLowerCase().includes(texto) ||
         nombrePorClaveSimi(f.ClaveSimi)?.toLowerCase().includes(texto)
     );
@@ -119,7 +133,7 @@ function DetalleTicket() {
         cargando={cargando}
         busqueda={busqueda}
         onCambiarBusqueda={setBusqueda}
-        busquedaPlaceholder="Buscar por folio, producto, vendedor o sucursal..."
+        busquedaPlaceholder="Buscar por folio, código, producto, vendedor, # empleado o sucursal..."
         exportColumns={filas.length > 0 ? COLUMNAS : undefined}
         exportRows={filasFiltradas}
         exportFileName={`detalle-ticket_${fechaInicial}_${fechaFinal}`}
