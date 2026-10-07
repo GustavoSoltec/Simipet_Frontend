@@ -54,6 +54,25 @@ const COLUMNAS_NIVEL3 = [
   { key: 'IVA', label: 'IVA', format: (v) => formatoMoneda.format(v || 0) }
 ];
 
+/** Redondea a 2 decimales y regresa número (no texto) para que el excel pueda sumar. */
+function numeroExportable(valor){
+  return Math.round((Number(valor) || 0) * 100) / 100;
+}
+
+// Exportación plana: una fila por artículo con los 3 niveles de la tabla
+// (Fecha/Sucursal -> Vendedor -> Producto) como columnas, para poder filtrar
+// y hacer tablas dinámicas en Excel. Los importes van como números (exportFormat).
+const COLUMNAS_EXPORTACION = [
+  { key: 'Fecha', label: 'Fecha', format: (v) => formatearFechaKey(v) },
+  { key: 'Sucursal', label: 'Sucursal', format: (v, fila) => claveYNombreSucursal(fila.ClaveSimi) || v },
+  { key: 'Vendedor', label: 'Vendedor' },
+  { key: 'Producto', label: 'Producto' },
+  { key: 'Piezas', label: 'Piezas', exportFormat: (v) => Number(v) || 0 },
+  { key: 'VentaNeta', label: 'Venta neta', exportFormat: numeroExportable },
+  { key: 'Descuento', label: 'Descuento', exportFormat: numeroExportable },
+  { key: 'IVA', label: 'IVA', exportFormat: numeroExportable }
+];
+
 function agruparPorFechaYSucursal(filas) {
   const grupos = new Map();
   filas.forEach((f) => {
@@ -182,7 +201,7 @@ function Productos() {
         busqueda={busqueda}
         onCambiarBusqueda={setBusqueda}
         busquedaPlaceholder="Buscar por producto, sucursal o vendedor..."
-        exportColumns={filasRawFiltradas.length > 0 ? COLUMNAS_NIVEL3 : undefined}
+        exportColumns={filasRawFiltradas.length > 0 ? COLUMNAS_EXPORTACION : undefined}
         exportRows={filasRawFiltradas}
         exportFileName={`productos_${fechaInicial}_${fechaFinal}`}
         exportTitulo="Productos"
