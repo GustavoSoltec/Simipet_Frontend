@@ -21,9 +21,20 @@ function extraerFilasPlanas(rows, columns) {
   );
 }
 
+const ANCHO_MAXIMO_COLUMNA = 60;
+
+/** Ancho de cada columna (en caracteres) segun su texto mas largo, encabezado incluido, con un margen y un tope. */
+function calcularAnchosColumnas(datos) {
+  return datos[0].map((_, i) => {
+    const maximo = datos.reduce((acc, fila) => Math.max(acc, String(fila[i] ?? '').length), 0);
+    return { wch: Math.min(maximo + 2, ANCHO_MAXIMO_COLUMNA) };
+  });
+}
+
 export function exportarExcel(rows, columns, fileName) {
   const datos = [columns.map((c) => c.label), ...extraerFilasPlanas(rows, columns)];
   const hoja = XLSX.utils.aoa_to_sheet(datos);
+  hoja['!cols'] = calcularAnchosColumnas(datos);
   const libro = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(libro, hoja, 'Datos');
   XLSX.writeFile(libro, `${fileName}.xlsx`);

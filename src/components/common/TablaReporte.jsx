@@ -29,8 +29,9 @@ function IconoColumnas() {
  * @param {boolean} [props.expandible] - si true, cada fila se puede abrir/cerrar
  * @param {(fila:object) => string|number} [props.filaId] - identificador unico de cada fila (requerido si expandible=true); por defecto usa el indice
  * @param {(fila:object) => React.ReactNode} [props.renderContenidoExpandido] - que mostrar dentro de la fila abierta (requerido si expandible=true); la vista decide que pedir y como pintarlo, esta tabla solo maneja el abrir/cerrar
+ * @param {(keys:string[]) => void} [props.onCambiarColumnasVisibles] - opcional: avisa a la vista que columnas estan marcadas (al montar y en cada cambio), para que la exportacion pueda respetarlas
  */
-function TablaReporte({ columns, rows, maxHeight, rowClassName, expandible, filaId, renderContenidoExpandido }) {
+function TablaReporte({ columns, rows, maxHeight, rowClassName, expandible, filaId, renderContenidoExpandido, onCambiarColumnasVisibles }) {
   const [columnasVisibles, setColumnasVisibles] = useState(
     () => new Set(columns.filter((c) => c.visibleByDefault !== false).map((c) => c.key))
   );
@@ -52,6 +53,12 @@ function TablaReporte({ columns, rows, maxHeight, rowClassName, expandible, fila
     () => columns.filter((c) => columnasVisibles.has(c.key)),
     [columns, columnasVisibles]
   );
+
+  useEffect(() => {
+    if (onCambiarColumnasVisibles) onCambiarColumnasVisibles(columnasFiltradas.map((c) => c.key));
+    // Solo cuando cambia la seleccion; el callback puede venir como funcion inline.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [columnasFiltradas]);
 
   function alternarColumna(key) {
     setColumnasVisibles((prev) => {
