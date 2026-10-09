@@ -73,6 +73,16 @@ const COLUMNAS_EXPORTACION = [
   { key: 'IVA', label: 'IVA', exportFormat: numeroExportable }
 ];
 
+/**
+ * En el catálogo SAT los segmentos 70 a 95 son servicios (veterinarios,
+ * gastos administrativos, etc.). Se usan los 2 primeros dígitos de
+ * Id_ProductoSAT; si no viene clave, se considera artículo.
+ */
+function esServicio(fila) {
+  const segmento = Number(String(fila.Id_ProductoSAT ?? '').trim().slice(0, 2));
+  return segmento >= 70;
+}
+
 function agruparPorFechaYSucursal(filas) {
   const grupos = new Map();
   filas.forEach((f) => {
@@ -175,8 +185,9 @@ function Productos() {
     const piezas = filasRawFiltradas.reduce((acc, f) => acc + (Number(f.Piezas) || 0), 0);
     const productosUnicos = new Set(filasRawFiltradas.map((f) => f.Producto)).size;
 
+    // El "Producto top" solo considera artículos: se excluyen servicios y gastos.
     const porProducto = new Map();
-    filasRawFiltradas.forEach((f) => {
+    filasRawFiltradas.filter((f) => !esServicio(f)).forEach((f) => {
       porProducto.set(f.Producto, (porProducto.get(f.Producto) || 0) + (Number(f.VentaNeta) || 0));
     });
     const top = [...porProducto.entries()].sort((a, b) => b[1] - a[1])[0];
