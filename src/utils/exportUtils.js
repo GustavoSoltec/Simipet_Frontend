@@ -32,11 +32,22 @@ function calcularAnchosColumnas(datos) {
 }
 
 export function exportarExcel(rows, columns, fileName) {
-  const datos = [columns.map((c) => c.label), ...extraerFilasPlanas(rows, columns)];
-  const hoja = XLSX.utils.aoa_to_sheet(datos);
-  hoja['!cols'] = calcularAnchosColumnas(datos);
+  exportarExcelHojas([{ nombre: 'Datos', rows, columns }], fileName);
+}
+
+/**
+ * Igual que exportarExcel, pero con varias hojas en el mismo libro (p. ej.
+ * Resumen / Tickets / Articulos). Cada hoja: { nombre, rows, columns }.
+ * Excel limita el nombre de hoja a 31 caracteres.
+ */
+export function exportarExcelHojas(hojas, fileName) {
   const libro = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(libro, hoja, 'Datos');
+  hojas.forEach(({ nombre, rows, columns }) => {
+    const datos = [columns.map((c) => c.label), ...extraerFilasPlanas(rows, columns)];
+    const hoja = XLSX.utils.aoa_to_sheet(datos);
+    hoja['!cols'] = calcularAnchosColumnas(datos);
+    XLSX.utils.book_append_sheet(libro, hoja, nombre.slice(0, 31));
+  });
   XLSX.writeFile(libro, `${fileName}.xlsx`);
 }
 

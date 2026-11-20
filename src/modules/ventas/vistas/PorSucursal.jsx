@@ -9,6 +9,7 @@ import TablaReporte from '../../../components/common/TablaReporte';
 import LoadingState from '../../../components/common/LoadingState';
 import EmptyState from '../../../components/common/EmptyState';
 import DetalleFechaSucursalTickets from './DetalleFechaSucursalTickets';
+import { exportarExcelHojas } from '../../../utils/exportUtils';
 import './PorSucursal.css';
 
 const formatoMoneda = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 2 });
@@ -39,6 +40,80 @@ const COLUMNAS = [
   { key: 'Porcentaje', label: '% Base comisión', format: (v) => formatoPorcentaje.format((v || 0) / 100), visibleByDefault: false },
   { key: 'TotalDescuentos', label: 'Descuentos', format: (v) => formatoMoneda.format(v || 0) }
 ];
+
+// ---- Excel con detalle (hojas Resumen / Tickets / Articulos) ----
+// Los importes van como numeros (exportFormat) para poder sumar y hacer
+// tablas dinamicas en Excel; PDF y CSV siguen usando COLUMNAS.
+
+function numeroExportable(valor) {
+  return Math.round((Number(valor) || 0) * 100) / 100;
+}
+
+/** Detalle Ticket regresa Fecha como DATE (llega 'yyyy-MM-ddT00:00:00.000Z') -> 'dd/MM/yyyy'. */
+function formatearFechaIso(fecha) {
+  const texto = String(fecha).slice(0, 10);
+  return `${texto.slice(8, 10)}/${texto.slice(5, 7)}/${texto.slice(0, 4)}`;
+}
+
+/** DATE de Detalle Ticket -> FechaKey 'yyyyMMdd' (texto), para cruzar con las filas del resumen. */
+function fechaIsoAFechaKey(fecha) {
+  return String(fecha).slice(0, 10).replaceAll('-', '');
+}
+
+const sucursalExportable = (v, fila) => claveYNombreSucursal(fila.ClaveSimi) || v || fila.ClaveSimi;
+
+const COLUMNAS_EXCEL_RESUMEN = [
+  { key: 'Fecha', label: 'Fecha', exportFormat: (v) => formatearFechaKey(v) },
+  { key: 'Sucursal', label: 'Sucursal', exportFormat: sucursalExportable },
+  { key: 'VentaNeta', label: 'Venta neta', exportFormat: numeroExportable },
+  { key: 'TcksNetos', label: 'Tickets netos', exportFormat: (v) => Number(v) || 0 },
+  { key: 'PromedioXNota', label: 'Promedio x nota', exportFormat: numeroExportable },
+  { key: 'Porcentaje', label: '% Base comisión', exportFormat: numeroExportable },
+  { key: 'TotalDescuentos', label: 'Descuentos', exportFormat: numeroExportable }
+];
+
+const COLUMNAS_EXCEL_TICKETS = [
+  { key: 'Fecha', label: 'Fecha', exportFormat: (v) => formatearFechaIso(v) },
+  { key: 'Sucursal', label: 'Sucursal', exportFormat: sucursalExportable },
+  { key: 'Folio', label: 'Folio' },
+  { key: 'Hora', label: 'Hora' },
+  { key: 'Vendedor', label: 'Vendedor' },
+  { key: 'FormaPago', label: 'Forma pago' },
+  { key: 'Concepto', label: 'Concepto' },
+  { key: 'SubtotalVenta', label: 'Subtotal', exportFormat: numeroExportable },
+  { key: 'DescuentoVenta', label: 'Descuento', exportFormat: numeroExportable },
+  { key: 'IvaVenta', label: 'IVA', exportFormat: numeroExportable },
+  { key: 'TotalVenta', label: 'Total', exportFormat: numeroExportable },
+  { key: 'Cancelada', label: 'Estatus', exportFormat: (v) => (v ? 'Cancelada' : 'Vigente') }
+];
+
+const COLUMNAS_EXCEL_ARTICULOS = [
+  { key: 'Fecha', label: 'Fecha', exportFormat: (v) => formatearFechaIso(v) },
+  { key: 'Sucursal', label: 'Sucursal', exportFormat: sucursalExportable },
+  { key: 'Folio', label: 'Folio' },
+  { key: 'CodigoProducto', label: 'Código' },
+  { key: 'Producto', label: 'Producto' },
+  { key: 'Cantidad', label: 'Cantidad', exportFormat: (v) => Number(v) || 0 },
+  { key: 'PrecioUnitario', label: 'P. unitario', exportFormat: numeroExportable },
+  { key: 'ImporteDescuento', label: 'Descuento', exportFormat: numeroExportable },
+  { key: 'ImporteIva', label: 'IVA', exportFormat: numeroExportable },
+  { key: 'ImporteTotal', label: 'Total', exportFormat: numeroExportable },
+  { key: 'Cancelada', label: 'Estatus', exportFormat: (v) => (v ? 'Cancelada' : 'Vigente') }
+];
+
+/**
+ * Un renglon por ticket (Detalle Ticket trae un renglon por articulo).
+ * Misma regla que el "+" de la tabla: se toma el primer renglon de cada
+ * folio y su TotalVenta ya calculado por el SP.
+ */
+function agruparTickets(filasDetalle) {
+  const porTicket = new Map();
+  filasDetalle.forEach((f) => {
+    const clave = `${fechaIsoAFechaKey(f.Fecha)}-${f.ClaveSimi}-${f.Folio}`;
+    if (!porTicket.has(clave)) porTicket.set(clave, f);
+  });
+  return [...porTicket.values()];
+}
 
 function agruparPorFechaYSucursal(filas) {
   const grupos = new Map();
@@ -87,6 +162,9 @@ function PorSucursal() {
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState(null);
   const [busqueda, setBusqueda] = useState('');
+  // Rango con el que se cargo la tabla: el Excel con detalle usa este, no
+  // el de los combos (pueden haberse cambiado sin volver a consultar).
+  const [rangoConsultado, setRangoConsultado] = useState(null);
 
   const consultar = useCallback(async () => {
     setCargando(true);
@@ -94,6 +172,7 @@ function PorSucursal() {
     try {
       const resultado = await ventasService.obtenerPorSucursalDetalle({ fechaInicial, fechaFinal });
       setFilas(resultado.data || []);
+      setRangoConsultado({ fechaInicial, fechaFinal });
       auditService.logAccion('ventas', 'por-sucursal', 'consultar', { fechaInicial, fechaFinal });
     } catch (err) {
       setError(err.response?.data?.message || 'No se pudo cargar el reporte. Intenta de nuevo.');
@@ -116,6 +195,40 @@ function PorSucursal() {
   }, [filas, busqueda]);
 
   const filasAgrupadas = useMemo(() => agruparPorFechaYSucursal(filasFiltradas), [filasFiltradas]);
+
+  /**
+   * Excel con 3 hojas: Resumen (la tabla), Tickets y Articulos. El detalle
+   * se pide en una sola llamada a Detalle Ticket (usp_Reporte_DetalleTicket)
+   * para todo el rango consultado, y se deja solo lo que corresponde a las
+   * filas del resumen (respeta la busqueda por sucursal).
+   */
+  const exportarExcelConDetalle = useCallback(async () => {
+    if (!rangoConsultado) return;
+    const { fechaInicial: desde, fechaFinal: hasta } = rangoConsultado;
+    const filasResumen = filasAgrupadas;
+    const clavesResumen = new Set(filasResumen.map((f) => `${f.Fecha}-${String(f.ClaveSimi).trim()}`));
+    const hayBusqueda = busqueda.trim() !== '';
+    const sucursales = hayBusqueda ? [...new Set(filasResumen.map((f) => String(f.ClaveSimi).trim()))] : undefined;
+
+    try {
+      const resultado = await ventasService.obtenerDetalleTicket({ fechaInicial: desde, fechaFinal: hasta, sucursales });
+      const articulos = (resultado.data || []).filter((f) =>
+        clavesResumen.has(`${fechaIsoAFechaKey(f.Fecha)}-${String(f.ClaveSimi).trim()}`)
+      );
+
+      exportarExcelHojas(
+        [
+          { nombre: 'Resumen', rows: filasResumen, columns: COLUMNAS_EXCEL_RESUMEN },
+          { nombre: 'Tickets', rows: agruparTickets(articulos), columns: COLUMNAS_EXCEL_TICKETS },
+          { nombre: 'Articulos', rows: articulos, columns: COLUMNAS_EXCEL_ARTICULOS }
+        ],
+        `por-sucursal_${desde}_${hasta}`
+      );
+      auditService.logAccion('ventas', 'por-sucursal', 'exportar-excel-detalle', { fechaInicial: desde, fechaFinal: hasta });
+    } catch (err) {
+      window.alert(err.response?.data?.message || 'No se pudo generar el Excel con el detalle. Intenta de nuevo.');
+    }
+  }, [rangoConsultado, filasAgrupadas, busqueda]);
 
   const kpis = useMemo(() => {
     const ventaNeta = filasFiltradas.reduce((acc, f) => acc + (Number(f.VentaNeta) || 0), 0);
@@ -167,6 +280,7 @@ function PorSucursal() {
         exportRows={filasAgrupadas}
         exportFileName={`por-sucursal_${fechaInicial}_${fechaFinal}`}
         exportTitulo="Por Sucursal"
+        onExportarExcel={exportarExcelConDetalle}
       />
 
       {cargando && <LoadingState label="Cargando reporte..." />}

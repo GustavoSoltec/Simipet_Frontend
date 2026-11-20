@@ -73,3 +73,8 @@
 .sp-boton-exportar__menu button:hover {
   background: var(--sp-surface-2);
 }
+
+.sp-boton-exportar__btn:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}

@@ -23,7 +23,8 @@ function SearchIcon() {
  *   - Un checkbox "Ocultar ventas en cero" (ocultarCeros/onCambiarOcultarCeros).
  *   - El boton de Exportar (exportColumns/exportRows/exportFileName/
  *     exportTitulo), empujado al extremo derecho -- misma linea que los
- *     combos de fecha, igual criterio visual que Soltec 2.0.
+ *     combos de fecha, igual criterio visual que Soltec 2.0. Con
+ *     onExportarExcel la vista puede armar su propio Excel (ver BotonExportar).
  */
 function FiltroRangoFecha({
   fechaInicial,
@@ -40,7 +41,8 @@ function FiltroRangoFecha({
   exportColumns,
   exportRows,
   exportFileName,
-  exportTitulo
+  exportTitulo,
+  onExportarExcel
 }) {
   return (
     <form
@@ -96,7 +98,13 @@ function FiltroRangoFecha({
 
       {exportColumns && (
         <div className="sp-filtro-rango-fecha__exportar">
-          <BotonExportar columns={exportColumns} rows={exportRows} fileName={exportFileName} titulo={exportTitulo} />
+          <BotonExportar
+            columns={exportColumns}
+            rows={exportRows}
+            fileName={exportFileName}
+            titulo={exportTitulo}
+            onExportarExcel={onExportarExcel}
+          />
         </div>
       )}
     </form>

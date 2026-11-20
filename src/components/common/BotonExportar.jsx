@@ -41,21 +41,33 @@ const CsvIcon = () => <DocIcon color="var(--sp-blue-600)" tag="CSV" />;
  * @param {Array<object>} props.rows
  * @param {string} props.fileName - nombre de archivo sin extension
  * @param {string} [props.titulo] - titulo mostrado en el PDF exportado
+ * @param {Function} [props.onExportarExcel] - si se pasa, reemplaza la
+ *   exportacion a Excel por la de la vista (puede ser async, p. ej. para
+ *   pedir el detalle al backend); mientras corre, el boton queda en
+ *   "Exportando..." y deshabilitado. PDF y CSV no cambian.
  */
-function BotonExportar({ columns, rows, fileName, titulo }) {
+function BotonExportar({ columns, rows, fileName, titulo, onExportarExcel }) {
   const [abierto, setAbierto] = useState(false);
+  const [exportando, setExportando] = useState(false);
 
-  function exportar(tipo) {
+  async function exportar(tipo) {
     setAbierto(false);
-    if (tipo === 'excel') exportarExcel(rows, columns, fileName);
+    if (tipo === 'excel' && onExportarExcel) {
+      setExportando(true);
+      try {
+        await onExportarExcel();
+      } finally {
+        setExportando(false);
+      }
+    } else if (tipo === 'excel') exportarExcel(rows, columns, fileName);
     else if (tipo === 'csv') exportarCSV(rows, columns, fileName);
     else if (tipo === 'pdf') exportarPDF(rows, columns, fileName, titulo);
   }
 
   return (
     <div className="sp-boton-exportar">
-      <button type="button" className="sp-boton-exportar__btn" onClick={() => setAbierto((v) => !v)}>
-        Exportar
+      <button type="button" className="sp-boton-exportar__btn" onClick={() => setAbierto((v) => !v)} disabled={exportando}>
+        {exportando ? 'Exportando...' : 'Exportar'}
         <span className={`sp-boton-exportar__chevron ${abierto ? 'sp-boton-exportar__chevron--open' : ''}`}>▾</span>
       </button>
       {abierto && (
