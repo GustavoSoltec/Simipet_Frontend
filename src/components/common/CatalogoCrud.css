@@ -123,6 +123,44 @@
   color: var(--sp-text-400);
 }
 
+.sp-catalogo-crud__ayuda {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--sp-text-400);
+}
+
+.sp-catalogo-crud__grupo-extra {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-space-3);
+}
+
+.sp-catalogo-crud__input-con-boton {
+  display: flex;
+  gap: 6px;
+}
+
+.sp-catalogo-crud__input-con-boton input {
+  flex: 1;
+  min-width: 0;
+}
+
+.sp-catalogo-crud__btn-mostrar {
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid var(--sp-border);
+  border-radius: 6px;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sp-text-500);
+}
+
+.sp-catalogo-crud__btn-mostrar:focus-visible {
+  outline: 2px solid var(--sp-blue-600);
+  outline-offset: 1px;
+}
+
 .sp-catalogo-crud__modal-acciones {
   display: flex;
   justify-content: flex-end;

@@ -94,6 +94,19 @@ const CONFIG_AGRUPACION = {
   }
 };
 
+/** Clave interna (nunca se manda al backend) donde vive la confirmacion de un campo extra, ej. "Confirmar contraseña". */
+function claveConfirmacion(nombre) {
+  return `__confirmar_${nombre}`;
+}
+
+function quitarCamposInternos(valores) {
+  const limpio = {};
+  Object.keys(valores).forEach((k) => {
+    if (!k.startsWith('__')) limpio[k] = valores[k];
+  });
+  return limpio;
+}
+
 /**
  * CRUD generico: no conoce de antemano las columnas de "empresas" o
  * "sucursales" -- las pide al backend (que a su vez las lee de
@@ -101,8 +114,29 @@ const CONFIG_AGRUPACION = {
  * curadas (CONFIG_COLUMNAS), y si el catalogo tiene agrupado
  * configurado (CONFIG_AGRUPACION), la vista principal es por grupo con
  * detalle inline en vez de tabla plana.
+ *
+ * configFormulario (opcional; sin el, el formulario se ve como siempre):
+ *   {
+ *     tituloNuevo, tituloEditar,
+ *     orden: ['Columna', ...],            // orden de los campos
+ *     campos: {
+ *       Columna: {
+ *         label,                           // etiqueta legible
+ *         requerido,                       // obligatorio aunque la tabla acepte NULL
+ *         requeridoSi: (valores) => bool,  // obligatorio segun otros campos
+ *         ayuda,                           // texto chico bajo el campo
+ *         fuenteOpciones: 'empresas',      // lista con las empresas ya cargadas
+ *         cargarOpciones: async () => [{ valor, etiqueta }],
+ *         textoVacio                       // opcion vacia de la lista
+ *       }
+ *     }
+ *   }
+ * La PK que genera el servidor (generadoPorServidor) se oculta al crear.
+ *
+ * camposExtra admite ademas: maxLength, confirmar (pide repetir el valor)
+ * y labelConfirmar; si tipo es "password" se agrega boton Mostrar/Ocultar.
  */
-function CatalogoCrud({ nombreCatalogo, titulo, acento = 'blue', camposExtra = [] }) {
+function CatalogoCrud({ nombreCatalogo, titulo, acento = 'blue', camposExtra = [], configFormulario = null }) {
   const [columnas, setColumnas] = useState([]);
   const [filas, setFilas] = useState([]);
   const [empresasPorId, setEmpresasPorId] = useState(new Map());
@@ -113,7 +147,10 @@ function CatalogoCrud({ nombreCatalogo, titulo, acento = 'blue', camposExtra = [
   const [valoresForm, setValoresForm] = useState({});
   const [guardando, setGuardando] = useState(false);
   const [errorForm, setErrorForm] = useState(null);
+  const [opcionesPorCampo, setOpcionesPorCampo] = useState({});
+  const [secretosVisibles, setSecretosVisibles] = useState({});
 
+  const camposConfig = configFormulario?.campos || {};
   const configColumnas = CONFIG_COLUMNAS[nombreCatalogo] || [];
   const configAgrupacion = CONFIG_AGRUPACION[nombreCatalogo] || null;
   const necesitaEmpresas = configColumnas.some((c) => c.resolverEmpresa);
@@ -130,7 +167,16 @@ function CatalogoCrud({ nombreCatalogo, titulo, acento = 'blue', camposExtra = [
         llamadas.push(apiClient.get('/api/v1/simipet-catalogo/empresas'));
       }
 
-      const [resColumnas, resFilas, resEmpresas] = await Promise.all(llamadas);
+      const cargadores = Object.entries(configFormulario?.campos || {}).filter(([, cfg]) => typeof cfg.cargarOpciones === 'function');
+      const promesaOpciones = Promise.all(cargadores.map(([, cfg]) => cfg.cargarOpciones()));
+
+      const [[resColumnas, resFilas, resEmpresas], opcionesCargadas] = await Promise.all([Promise.all(llamadas), promesaOpciones]);
+
+      const mapaOpciones = {};
+      cargadores.forEach(([nombre], i) => {
+        mapaOpciones[nombre] = opcionesCargadas[i] || [];
+      });
+      setOpcionesPorCampo(mapaOpciones);
       setColumnas(resColumnas.data.columnas || []);
       setFilas((resFilas.data.data || []).map(normalizarFila));
 
@@ -148,7 +194,7 @@ function CatalogoCrud({ nombreCatalogo, titulo, acento = 'blue', camposExtra = [
     } finally {
       setCargando(false);
     }
-  }, [nombreCatalogo, necesitaEmpresas]);
+  }, [nombreCatalogo, necesitaEmpresas, configFormulario]);
 
   useEffect(() => {
     auditService.logModulo('administracion', nombreCatalogo);
@@ -176,8 +222,12 @@ function CatalogoCrud({ nombreCatalogo, titulo, acento = 'blue', camposExtra = [
 
   function abrirCrear() {
     setFilaEditando(null);
-    setValoresForm({});
+    // El select de Estatus muestra "Activo" por default; sin guardarlo
+    // aqui, el registro se insertaba con Estatus NULL (y en usuarios, el
+    // login trata NULL como inactivo).
+    setValoresForm(columnaEstatusReal ? { [columnaEstatusReal]: 1 } : {});
     setErrorForm(null);
+    setSecretosVisibles({});
     setModalAbierto(true);
   }
 
@@ -185,6 +235,7 @@ function CatalogoCrud({ nombreCatalogo, titulo, acento = 'blue', camposExtra = [
     setFilaEditando(fila);
     setValoresForm({ ...fila });
     setErrorForm(null);
+    setSecretosVisibles({});
     setModalAbierto(true);
   }
 
@@ -278,16 +329,52 @@ function CatalogoCrud({ nombreCatalogo, titulo, acento = 'blue', camposExtra = [
     [configAgrupacion]
   );
 
+  function opcionesDeCampo(nombre, cfg) {
+    if (cfg.fuenteOpciones === 'empresas') {
+      return [...empresasPorId.entries()]
+        .map(([valor, etiqueta]) => ({ valor, etiqueta: String(etiqueta) }))
+        .sort((a, b) => a.etiqueta.localeCompare(b.etiqueta));
+    }
+    return opcionesPorCampo[nombre] || [];
+  }
+
+  function esRequerido(columna) {
+    const cfg = camposConfig[columna.nombre] || {};
+    return Boolean(columna.requerido || cfg.requerido || (cfg.requeridoSi && cfg.requeridoSi(valoresForm)));
+  }
+
+  /** Columnas que se pintan en el formulario, en el orden configurado (las no listadas van al final). */
+  function columnasDelFormulario() {
+    const visibles = columnas.filter((c) => !c.autoIncremental && !(c.generadoPorServidor && !filaEditando));
+    const orden = configFormulario?.orden;
+    if (!orden) return visibles;
+    const posicion = (c) => {
+      const i = orden.indexOf(c.nombre);
+      return i === -1 ? orden.length : i;
+    };
+    return [...visibles].sort((a, b) => posicion(a) - posicion(b));
+  }
+
   async function guardar(e) {
     e.preventDefault();
-    setGuardando(true);
     setErrorForm(null);
+
+    const noCoincide = camposExtra.find(
+      (c) => c.confirmar && (valoresForm[c.nombre] || '') !== (valoresForm[claveConfirmacion(c.nombre)] || '')
+    );
+    if (noCoincide) {
+      setErrorForm(`${noCoincide.label} y su confirmación no coinciden.`);
+      return;
+    }
+
+    const datos = quitarCamposInternos(valoresForm);
+    setGuardando(true);
     try {
       if (filaEditando) {
-        await apiClient.put(`/api/v1/simipet-catalogo/${nombreCatalogo}/${filaEditando[pk]}`, valoresForm);
+        await apiClient.put(`/api/v1/simipet-catalogo/${nombreCatalogo}/${filaEditando[pk]}`, datos);
         auditService.logAccion('administracion', nombreCatalogo, 'editar', { id: filaEditando[pk] });
       } else {
-        await apiClient.post(`/api/v1/simipet-catalogo/${nombreCatalogo}`, valoresForm);
+        await apiClient.post(`/api/v1/simipet-catalogo/${nombreCatalogo}`, datos);
         auditService.logAccion('administracion', nombreCatalogo, 'crear', {});
       }
       setModalAbierto(false);
@@ -334,20 +421,58 @@ function CatalogoCrud({ nombreCatalogo, titulo, acento = 'blue', camposExtra = [
       {modalAbierto && (
         <div className="sp-catalogo-crud__overlay" onClick={() => setModalAbierto(false)}>
           <form className="sp-catalogo-crud__modal" onClick={(e) => e.stopPropagation()} onSubmit={guardar}>
-            <h3 className="sp-catalogo-crud__modal-titulo">{filaEditando ? 'Editar registro' : 'Nuevo registro'}</h3>
+            <h3 className="sp-catalogo-crud__modal-titulo">
+              {filaEditando ? configFormulario?.tituloEditar || 'Editar registro' : configFormulario?.tituloNuevo || 'Nuevo registro'}
+            </h3>
 
             {errorForm && <div className="sp-catalogo-crud__error-form">{errorForm}</div>}
 
             <div className="sp-catalogo-crud__campos">
-              {columnas
-                .filter((c) => !c.autoIncremental)
-                .map((c) => (
+              {columnasDelFormulario().map((c) => {
+                const cfg = camposConfig[c.nombre] || {};
+                const requerido = esRequerido(c);
+                const tieneLista = Boolean(cfg.fuenteOpciones || cfg.cargarOpciones);
+                const etiqueta = cfg.label || (c.nombre === columnaEstatusReal ? 'Estatus' : c.nombre);
+                const deshabilitado = c.esLlavePrimaria && Boolean(filaEditando);
+
+                let opciones = [];
+                if (tieneLista) {
+                  opciones = opcionesDeCampo(c.nombre, cfg);
+                  const actual = valoresForm[c.nombre];
+                  // Si el valor guardado ya no esta en la lista (ej. empresa
+                  // inactiva), se muestra igual para no perderlo en silencio.
+                  if (actual != null && actual !== '' && !opciones.some((o) => String(o.valor) === String(actual))) {
+                    opciones = [...opciones, { valor: actual, etiqueta: `${actual} (no encontrado)` }];
+                  }
+                }
+
+                return (
                   <label key={c.nombre} className="sp-catalogo-crud__campo">
                     <span>
-                      {c.nombre === columnaEstatusReal ? 'Estatus' : c.nombre}
-                      {c.requerido ? ' *' : ''}
+                      {etiqueta}
+                      {requerido ? ' *' : ''}
                     </span>
-                    {c.nombre === columnaEstatusReal ? (
+                    {tieneLista ? (
+                      <select
+                        value={valoresForm[c.nombre] == null ? '' : String(valoresForm[c.nombre])}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          setValoresForm((prev) => ({
+                            ...prev,
+                            [c.nombre]: v === '' ? '' : esColumnaNumerica(c.tipo) ? Number(v) : v
+                          }));
+                        }}
+                        disabled={deshabilitado}
+                        required={requerido}
+                      >
+                        <option value="">{cfg.textoVacio || 'Selecciona...'}</option>
+                        {opciones.map((o) => (
+                          <option key={String(o.valor)} value={String(o.valor)}>
+                            {o.etiqueta}
+                          </option>
+                        ))}
+                      </select>
+                    ) : c.nombre === columnaEstatusReal ? (
                       <select
                         value={valoresForm[c.nombre] ?? 1}
                         onChange={(e) => setValoresForm((v) => ({ ...v, [c.nombre]: Number(e.target.value) }))}
@@ -360,37 +485,80 @@ function CatalogoCrud({ nombreCatalogo, titulo, acento = 'blue', camposExtra = [
                         type="number"
                         value={valoresForm[c.nombre] ?? ''}
                         onChange={(e) => setValoresForm((v) => ({ ...v, [c.nombre]: e.target.value === '' ? '' : Number(e.target.value) }))}
-                        disabled={c.esLlavePrimaria && Boolean(filaEditando)}
-                        required={c.requerido}
+                        disabled={deshabilitado}
+                        required={requerido}
                       />
                     ) : (
                       <input
                         type="text"
                         value={valoresForm[c.nombre] ?? ''}
                         onChange={(e) => setValoresForm((v) => ({ ...v, [c.nombre]: e.target.value }))}
-                        disabled={c.esLlavePrimaria && Boolean(filaEditando)}
-                        required={c.requerido}
+                        disabled={deshabilitado}
+                        required={requerido}
+                        maxLength={c.longitudMaxima || undefined}
                       />
                     )}
+                    {cfg.ayuda && <small className="sp-catalogo-crud__ayuda">{cfg.ayuda}</small>}
                   </label>
-                ))}
+                );
+              })}
 
-              {camposExtra.map((c) => (
-                <label key={c.nombre} className="sp-catalogo-crud__campo">
-                  <span>
-                    {c.label}
-                    {!filaEditando && c.requeridoAlCrear ? ' *' : ''}
-                  </span>
-                  <input
-                    type={c.tipo || 'text'}
-                    value={valoresForm[c.nombre] ?? ''}
-                    onChange={(e) => setValoresForm((v) => ({ ...v, [c.nombre]: e.target.value }))}
-                    placeholder={filaEditando ? c.ayudaAlEditar : undefined}
-                    required={!filaEditando && c.requeridoAlCrear}
-                    autoComplete="new-password"
-                  />
-                </label>
-              ))}
+              {camposExtra.map((c) => {
+                const esSecreto = c.tipo === 'password';
+                const visible = Boolean(secretosVisibles[c.nombre]);
+                const tipoInput = esSecreto && visible ? 'text' : c.tipo || 'text';
+                const valor = valoresForm[c.nombre] ?? '';
+                const requerido = !filaEditando && c.requeridoAlCrear;
+                // Al editar, la confirmacion solo se pide si se escribio una nueva.
+                const pideConfirmacion = c.confirmar && (requerido || valor !== '');
+
+                return (
+                  <div key={c.nombre} className="sp-catalogo-crud__grupo-extra">
+                    <label className="sp-catalogo-crud__campo">
+                      <span>
+                        {c.label}
+                        {requerido ? ' *' : ''}
+                      </span>
+                      <span className="sp-catalogo-crud__input-con-boton">
+                        <input
+                          type={tipoInput}
+                          value={valor}
+                          onChange={(e) => setValoresForm((v) => ({ ...v, [c.nombre]: e.target.value }))}
+                          placeholder={filaEditando ? c.ayudaAlEditar : undefined}
+                          required={requerido}
+                          maxLength={c.maxLength || undefined}
+                          autoComplete="new-password"
+                        />
+                        {esSecreto && (
+                          <button
+                            type="button"
+                            className="sp-catalogo-crud__btn-mostrar"
+                            onClick={() => setSecretosVisibles((s) => ({ ...s, [c.nombre]: !s[c.nombre] }))}
+                            aria-label={visible ? 'Ocultar' : 'Mostrar'}
+                          >
+                            {visible ? 'Ocultar' : 'Mostrar'}
+                          </button>
+                        )}
+                      </span>
+                      {c.maxLength && <small className="sp-catalogo-crud__ayuda">Máximo {c.maxLength} caracteres.</small>}
+                    </label>
+
+                    {pideConfirmacion && (
+                      <label className="sp-catalogo-crud__campo">
+                        <span>{c.labelConfirmar || `Confirmar ${c.label.toLowerCase()}`} *</span>
+                        <input
+                          type={tipoInput}
+                          value={valoresForm[claveConfirmacion(c.nombre)] ?? ''}
+                          onChange={(e) => setValoresForm((v) => ({ ...v, [claveConfirmacion(c.nombre)]: e.target.value }))}
+                          required
+                          maxLength={c.maxLength || undefined}
+                          autoComplete="new-password"
+                        />
+                      </label>
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
             <div className="sp-catalogo-crud__modal-acciones">
