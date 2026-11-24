@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { puedeCambiarFondoLogin } from '../../services/fondoLoginService';
 import logoIcon from '../../assets/logo-icon.png';
 import logoIconDarkMode from '../../assets/logo-icon-dark-mode.png';
 import './Sidebar.css';
@@ -105,6 +106,9 @@ const NAV_ITEMS = [
       { to: '/administracion/usuarios', label: 'Usuarios' },
       { to: '/administracion/empresas', label: 'Empresas' },
       { to: '/administracion/sucursales', label: 'Sucursales' },
+      // "permiso": solo se muestra si ese permiso llega en true (ver
+      // permisos en Sidebar). Hoy solo Ruby (FONDO_LOGIN_USUARIOS).
+      { to: '/administracion/fondo-login', label: 'Fondo de login', permiso: 'fondoLogin' },
     ],
   },
 ];
@@ -129,12 +133,36 @@ function Sidebar({ collapsed, mobileOpen, onCloseMobile, theme = 'dark' }) {
   // operativo (idPerfil 1) es al reves: ve todo lo operativo, y nunca
   // sabe que Administracion existe.
   const esAdministrador = [2, 3].includes(Number(user?.idPerfil));
+
+  // Permisos puntuales por usuario que decide el backend (no el perfil).
+  // Solo se consultan para administradores, que son los unicos que ven
+  // el grupo de Administracion.
+  const [permisos, setPermisos] = useState({});
+  useEffect(() => {
+    if (!esAdministrador) {
+      setPermisos({});
+      return undefined;
+    }
+    let vigente = true;
+    puedeCambiarFondoLogin()
+      .then((puede) => vigente && setPermisos({ fondoLogin: puede }))
+      .catch(() => vigente && setPermisos({}));
+    return () => {
+      vigente = false;
+    };
+  }, [esAdministrador, user?.id]);
+
   const navItems = useMemo(
     () =>
-      esAdministrador
+      (esAdministrador
         ? NAV_ITEMS.filter((item) => item.key === 'administracion')
-        : NAV_ITEMS.filter((item) => item.key !== 'administracion'),
-    [esAdministrador]
+        : NAV_ITEMS.filter((item) => item.key !== 'administracion')
+      ).map((item) =>
+        item.children
+          ? { ...item, children: item.children.filter((child) => !child.permiso || permisos[child.permiso]) }
+          : item
+      ),
+    [esAdministrador, permisos]
   );
 
   // Si la ruta activa cae dentro de un grupo, ese grupo arranca abierto.

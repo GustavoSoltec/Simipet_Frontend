@@ -5,10 +5,14 @@
   justify-content: center;
   padding: var(--sp-space-4);
 
-  /* Misma foto de fondo que Soltec 2.0, con el mismo overlay ligero
-     para que la tarjeta resalte sin oscurecer la foto por completo. */
+  /* La foto la decide Login.jsx en --sp-login-fondo: la personalizada
+     del API (Administracion > Fondo de login) o /login-bg.jpg de public/.
+     Encima va el mismo overlay ligero de Soltec 2.0 para que la tarjeta
+     resalte sin oscurecer la foto por completo. Mientras la foto carga
+     se ve solo el color base. */
+  background-color: var(--sp-navy-900);
   background-image: linear-gradient(180deg, rgba(10, 16, 28, 0.18), rgba(10, 16, 28, 0.28)),
-    url('/login-bg.jpg');
+    var(--sp-login-fondo, none);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

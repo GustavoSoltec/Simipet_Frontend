@@ -75,7 +75,7 @@ simipet/
     modules/
       ventas/                   <- 7 reportes
       inventarios/              <- 2 reportes
-      administracion/           <- Usuarios, Empresas, Sucursales
+      administracion/           <- Usuarios, Empresas, Sucursales, Fondo de login
     pages/
       Login.jsx
       Dashboard.jsx
@@ -185,6 +185,26 @@ Sucursales se agrupa por Empresa; Usuarios se agrupa por tipo de perfil
 (Clientes = perfil 1, Administradores = perfil 2 y 3) -- el agrupado es
 100% del lado del cliente, sobre los mismos datos que regresa el `GET`
 normal.
+
+### Fondo de login (`/administracion/fondo-login`)
+
+Vista `vistas/FondoLogin.jsx`. Permite cambiar la imagen de fondo del login
+sin recompilar. Solo aparece en el menú para los usuarios de
+`FONDO_LOGIN_USUARIOS` del backend (hoy: Ruby); el Sidebar lo pregunta con
+`GET /simipet-config/fondo-login/permiso`. Toda la lógica vive en
+`services/fondoLoginService.js`, que comparten Login, Sidebar y esta vista:
+
+```
+GET    /simipet-config/fondo-login           (público; 404 = no hay personalizado)
+GET    /simipet-config/fondo-login/permiso   { puedeEditar }
+PUT    /simipet-config/fondo-login           cuerpo = la imagen
+DELETE /simipet-config/fondo-login           vuelve al original
+```
+
+Antes de subirla, la imagen se reduce en el navegador a 1920 px (lado
+mayor) y se convierte a JPEG. El login intenta primero la imagen
+personalizada y, si no hay o el API no responde en 5 s, usa
+`public/login-bg.jpg`.
 
 ---
 

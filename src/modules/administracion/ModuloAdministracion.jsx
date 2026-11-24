@@ -4,6 +4,7 @@ import auditService from '../../services/auditService';
 import Empresas from './vistas/Empresas';
 import Sucursales from './vistas/Sucursales';
 import Usuarios from './vistas/Usuarios';
+import FondoLogin from './vistas/FondoLogin';
 import './ModuloAdministracion.css';
 
 /**
@@ -25,6 +26,9 @@ function ModuloAdministracion() {
         <Route path="empresas" element={<Empresas />} />
         <Route path="sucursales" element={<Sucursales />} />
         <Route path="usuarios" element={<Usuarios />} />
+        {/* Solo para FONDO_LOGIN_USUARIOS del backend; la vista misma
+            consulta el permiso y el backend lo valida al guardar. */}
+        <Route path="fondo-login" element={<FondoLogin />} />
       </Routes>
     </div>
   );

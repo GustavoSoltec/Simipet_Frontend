@@ -294,29 +294,55 @@
   }
 }
 
-/* Movil: sidebar se convierte en drawer superpuesto */
+/* Movil: sidebar se convierte en drawer superpuesto.
+   No se reescribe el "display" de etiquetas ni submenu: la regla de
+   tablet solo los oculta cuando el drawer NO esta abierto, asi que al
+   abrirlo recuperan su display original (el submenu es block y sus
+   opciones quedan en columna). Forzar "display: flex" aqui ponia las
+   subopciones en una sola fila. */
 @media (max-width: 720px) {
   .sp-sidebar {
     position: fixed;
     left: 0;
     top: 0;
+    /* 100dvh descuenta la barra del navegador movil; 100vh queda de
+       respaldo para navegadores que no lo soportan. */
+    height: 100vh;
+    height: 100dvh;
+    width: min(280px, 85vw);
     transform: translateX(-100%);
-    width: 240px;
     transition: transform 0.2s ease;
   }
 
   .sp-sidebar--mobile-open {
     transform: translateX(0);
-    width: 240px;
+    width: min(280px, 85vw);
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35);
   }
 
-  .sp-sidebar--mobile-open .sp-sidebar__label,
-  .sp-sidebar--mobile-open .sp-sidebar__chevron,
-  .sp-sidebar--mobile-open .sp-sidebar__submenu,
-  .sp-sidebar--mobile-open .sp-sidebar__user-name,
-  .sp-sidebar--mobile-open .sp-sidebar__footer-actions {
-    display: flex;
+  .sp-sidebar__nav {
+    overscroll-behavior: contain;
+  }
+
+  /* Areas tactiles mas comodas para el dedo */
+  .sp-sidebar__link {
+    padding-top: 13px;
+    padding-bottom: 13px;
+  }
+
+  .sp-sidebar__sublink {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  /* Que el pie no quede bajo la barra de gestos del telefono */
+  .sp-sidebar__footer {
+    padding-bottom: calc(var(--sp-space-3) + env(safe-area-inset-bottom, 0px));
+  }
+
+  .sp-sidebar__footer-btn {
+    width: 36px;
+    height: 36px;
   }
 
   .sp-sidebar__scrim {

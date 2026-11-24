@@ -25,6 +25,10 @@ function restoreUserFromToken() {
     id: payload.id ?? payload.idUsuario ?? null,
     nombre: payload.nombre ?? payload.usuario ?? '',
     idEmpresa: payload.idEmpresa ?? null,
+    // idPerfil decide el menu y la pagina de inicio (Sidebar.jsx,
+    // AppRoutes.jsx): sin el, un administrador que recarga la pagina se
+    // veia como perfil operativo hasta volver a iniciar sesion.
+    idPerfil: payload.idPerfil ?? null,
     rol: payload.rol ?? null,
   };
 }

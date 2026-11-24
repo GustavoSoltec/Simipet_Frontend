@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import authService from '../services/authService';
+import { cargarFondoPersonalizado, FONDO_LOGIN_PREDETERMINADO } from '../services/fondoLoginService';
 import Notice from '../components/common/Notice';
 import logoIcon from '../assets/logo-icon.png';
 import './Login.css';
@@ -56,6 +57,21 @@ function Login() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Fondo: primero se intenta el personalizado (lo sube Ruby desde
+  // Administracion > Fondo de login); si no hay o el API no responde, se
+  // usa el de public/. Mientras tanto se ve el color base del CSS, en vez
+  // de mostrar un fondo y cambiarlo de golpe por el otro.
+  const [fondo, setFondo] = useState(null);
+  useEffect(() => {
+    let vigente = true;
+    cargarFondoPersonalizado().then((url) => {
+      if (vigente) setFondo(url || FONDO_LOGIN_PREDETERMINADO);
+    });
+    return () => {
+      vigente = false;
+    };
+  }, []);
+
   if (isAuthenticated) {
     const redirectTo = location.state?.from?.pathname || '/';
     return <Navigate to={redirectTo} replace />;
@@ -72,7 +88,7 @@ function Login() {
   };
 
   return (
-    <div className="sp-login">
+    <div className="sp-login" style={fondo ? { '--sp-login-fondo': `url("${fondo}")` } : undefined}>
       <form className="sp-login__card" onSubmit={handleSubmit}>
         <div className="sp-login__brand">
           <img src={logoIcon} alt="Simipet" className="sp-login__brand-mark" />

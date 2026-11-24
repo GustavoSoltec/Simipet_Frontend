@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
@@ -14,6 +14,20 @@ const TITLES_BY_PATH = {
 };
 
 const SIDEBAR_THEME_STORAGE_KEY = 'simipet_sidebar_theme';
+
+// Debe coincidir con el breakpoint de movil de Sidebar.css y Layout.css.
+const MOBILE_QUERY = '(max-width: 720px)';
+
+function useEsMovil() {
+  const [esMovil, setEsMovil] = useState(() => window.matchMedia(MOBILE_QUERY).matches);
+  useEffect(() => {
+    const mql = window.matchMedia(MOBILE_QUERY);
+    const onChange = (e) => setEsMovil(e.matches);
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
+  return esMovil;
+}
 
 function resolveTitle(pathname) {
   const exact = TITLES_BY_PATH[pathname];
@@ -32,11 +46,28 @@ function Layout() {
     () => localStorage.getItem(SIDEBAR_THEME_STORAGE_KEY) || 'dark'
   );
   const location = useLocation();
+  const esMovil = useEsMovil();
+
+  // Al cambiar de pantalla, o al salir del ancho de movil (girar el
+  // telefono, agrandar la ventana), el drawer se cierra.
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname, esMovil]);
+
+  // Con el drawer abierto, la pagina de atras no se desplaza.
+  useEffect(() => {
+    if (!(esMovil && mobileOpen)) return undefined;
+    const anterior = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = anterior;
+    };
+  }, [esMovil, mobileOpen]);
 
   const handleToggleSidebar = () => {
     // En pantallas angostas el boton abre/cierra el drawer; en escritorio
     // colapsa/expande el sidebar fijo.
-    if (window.innerWidth <= 720) {
+    if (esMovil) {
       setMobileOpen((prev) => !prev);
     } else {
       setCollapsed((prev) => !prev);
@@ -51,10 +82,14 @@ function Layout() {
     });
   };
 
+  // En movil el drawer siempre se muestra completo, aunque el usuario
+  // haya colapsado el menu antes en una pantalla ancha.
+  const sidebarColapsado = collapsed && !esMovil;
+
   return (
     <div className="sp-layout">
       <Sidebar
-        collapsed={collapsed}
+        collapsed={sidebarColapsado}
         mobileOpen={mobileOpen}
         onCloseMobile={() => setMobileOpen(false)}
         theme={sidebarTheme}
